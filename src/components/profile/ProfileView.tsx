@@ -280,7 +280,11 @@ export function ProfileView({
               legalName={
                 free ? null : (profile.verified_legal_name ?? profile.display_name ?? null)
               }
+              country={free ? null : (profile.country_code ?? null)}
+              domain={claimedDomain}
               nameFormat={prefs.badgeNameFormat}
+              backdrop={prefs.badgeBackdrop}
+              backdropColor={prefs.badgeBackdropColor}
               verifiedAt={profile.verified_at ?? null}
               size={earlyBeliever ? "md" : "sm"}
               cardBg={t.card}
