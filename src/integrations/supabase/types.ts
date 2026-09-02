@@ -236,6 +236,42 @@ export type Database = {
         }
         Relationships: []
       }
+      contact_submissions: {
+        Row: {
+          created_at: string
+          email: string
+          fingerprint_hash: string | null
+          id: string
+          ip_hash: string | null
+          message: string
+          name: string
+          subject: string
+          user_agent_hash: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          fingerprint_hash?: string | null
+          id?: string
+          ip_hash?: string | null
+          message: string
+          name: string
+          subject: string
+          user_agent_hash?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          fingerprint_hash?: string | null
+          id?: string
+          ip_hash?: string | null
+          message?: string
+          name?: string
+          subject?: string
+          user_agent_hash?: string | null
+        }
+        Relationships: []
+      }
       custom_domains: {
         Row: {
           created_at: string
@@ -983,6 +1019,10 @@ export type Database = {
     }
     Functions: {
       claim_referral: { Args: { p_referrer: string }; Returns: undefined }
+      contact_submissions_recent_count: {
+        Args: { _ip_hash: string; _minutes?: number }
+        Returns: number
+      }
       delete_account: { Args: never; Returns: undefined }
       exec_query: { Args: { _params?: Json; _query: string }; Returns: Json[] }
       exec_sql: { Args: { _params?: Json; _query: string }; Returns: Json }
