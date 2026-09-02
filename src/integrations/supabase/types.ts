@@ -418,6 +418,7 @@ export type Database = {
           custom_domain: string | null
           display_name: string | null
           display_prefs: Json | null
+          email: string | null
           favicon_url: string | null
           forwarding_email: string | null
           forwarding_email_token: string | null
@@ -467,6 +468,7 @@ export type Database = {
           custom_domain?: string | null
           display_name?: string | null
           display_prefs?: Json | null
+          email?: string | null
           favicon_url?: string | null
           forwarding_email?: string | null
           forwarding_email_token?: string | null
@@ -516,6 +518,7 @@ export type Database = {
           custom_domain?: string | null
           display_name?: string | null
           display_prefs?: Json | null
+          email?: string | null
           favicon_url?: string | null
           forwarding_email?: string | null
           forwarding_email_token?: string | null
@@ -935,6 +938,18 @@ export type Database = {
       }
     }
     Views: {
+      profile_handles: {
+        Row: {
+          username: string | null
+        }
+        Insert: {
+          username?: string | null
+        }
+        Update: {
+          username?: string | null
+        }
+        Relationships: []
+      }
       public_profiles: {
         Row: {
           avatar_url: string | null
@@ -1028,6 +1043,27 @@ export type Database = {
       exec_sql: { Args: { _params?: Json; _query: string }; Returns: Json }
       exec_transaction: { Args: { _queries: Json }; Returns: Json }
       generate_unique_handle: { Args: { _seed: string }; Returns: string }
+      get_my_account: {
+        Args: never
+        Returns: {
+          avatar_url: string
+          bluesky_did: string
+          display_name: string
+          email: string
+          forwarding_email: string
+          forwarding_email_verified: boolean
+          id: string
+          is_early_believer: boolean
+          is_paid: boolean
+          roles: Database["public"]["Enums"]["app_role"][]
+          show_email_publicly: boolean
+          status: string
+          tier: string
+          username: string
+          verified: boolean
+          verified_at: string
+        }[]
+      }
       get_my_profile: {
         Args: never
         Returns: {
@@ -1046,6 +1082,7 @@ export type Database = {
           custom_domain: string | null
           display_name: string | null
           display_prefs: Json | null
+          email: string | null
           favicon_url: string | null
           forwarding_email: string | null
           forwarding_email_token: string | null
