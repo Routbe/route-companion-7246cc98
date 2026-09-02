@@ -127,10 +127,24 @@ export function ProfileView({
   // aan een geverifieerd, menselijk account gekoppeld is — zonder echte naam.
   // Aliasprofiel: het mens-symbool verschijnt wanneer het gekoppelde account
   // geverifieerd is (`human_linked`) en de eigenaar de badge niet uitzette.
+  // Een via DNS geclaimde domeinnaam (`rout.be/example.be`) mag de zwarte
+  // domeinbadge dragen.
+  const claimedDomain = /^[a-z0-9-]+(\.[a-z0-9-]+)+$/i.test(profile.subdomain_alias ?? "")
+    ? (profile.subdomain_alias as string)
+    : null;
   const showBadge = free
     ? Boolean(profile.human_linked) && prefs.humanBadgeVisible
-    : Boolean(profile.verified) && prefs.badgeVisible;
-  const badgeType = free ? "human" : "verified";
+    : Boolean(profile.verified) && prefs.badgeVisible && prefs.badgeType !== "none";
+  /**
+   * Beide badges zijn vrij te kiezen: een geverifieerd lid mag het blauwe
+   * vinkje (identiteit + land) of het privacy-schild (enkel "echte mens")
+   * tonen, of de zwarte domeinbadge wanneer een domein geclaimd is — of niets.
+   */
+  const badgeType: BadgeType = free
+    ? "human"
+    : prefs.badgeType === "domain" && !claimedDomain
+      ? "verified"
+      : prefs.badgeType;
   const showWatermark =
     shouldShowWatermark(Boolean(profile.verified), prefs) &&
     (profile.verified ? prefs.showRoutBadge : true);
