@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { ExternalLink, Share2 } from "lucide-react";
+import { InfoHint } from "@/components/InfoHint";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -103,7 +104,14 @@ export function SocialSharingCard({
       </div>
 
       <div className="space-y-2">
-        <span className="input-label">Accentkleur (theme-color)</span>
+        <span className="input-label flex items-center gap-1">
+          Accentkleur (theme-color)
+          <InfoHint label="Wat is theme-color?">
+            De kleur die apps en mobiele browsers rond je link gebruiken: de balk bovenaan in
+            Chrome/Safari op je telefoon en het streepje links van je link in Discord, Slack of
+            WhatsApp. Laat je dit leeg, dan kiest ROUT zelf een kleur.
+          </InfoHint>
+        </span>
         <div className="flex items-center gap-2">
           <input
             type="color"

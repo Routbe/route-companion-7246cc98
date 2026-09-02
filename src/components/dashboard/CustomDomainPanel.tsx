@@ -1,15 +1,17 @@
 import { useCallback, useEffect, useState } from "react";
-import { CheckCircle2, Clock, Globe, Loader2, RefreshCw, Trash2 } from "lucide-react";
+import { AtSign, CheckCircle2, Clock, Globe, Loader2, RefreshCw, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { InfoHint } from "@/components/InfoHint";
 import {
   DOMAIN_CNAME_TARGET,
   addCustomDomain,
   deleteCustomDomain,
   listCustomDomains,
   verifyCustomDomain,
+  claimDomainAsHandle,
 } from "@/lib/domains.functions";
 
 interface DomainRow {
@@ -77,6 +79,20 @@ export function CustomDomainPanel() {
     }
   }
 
+  /** Domein als handle gebruiken: rout.be/example.be, altijd na DNS-controle. */
+  async function claimHandle(id: string) {
+    setBusy(id);
+    try {
+      const res = await claimDomainAsHandle({ data: { id } });
+      toast.success(`Je profiel staat nu ook op rout.be/${res.handle} — met de zwarte domeinbadge.`);
+      await refresh();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Claimen mislukt.");
+    } finally {
+      setBusy(null);
+    }
+  }
+
   async function remove(id: string) {
     setBusy(id);
     try {
@@ -99,6 +115,15 @@ export function CustomDomainPanel() {
           Wijs een subdomein met een CNAME naar{" "}
           <code className="font-mono">{DOMAIN_CNAME_TARGET}</code>. Na verificatie toont dat domein
           je profiel.
+        </p>
+        <p className="mt-1 text-xs text-muted-foreground">
+          Een geverifieerd domein mag je ook als handle gebruiken:{" "}
+          <code className="font-mono">rout.be/jouwmerk.be</code>.
+          <InfoHint label="Wat is een DNS-zone?">
+            Je DNS-zone is de instellingenlijst bij je domeinregistrar waar je records (CNAME, TXT)
+            toevoegt. We controleren die records elke keer opnieuw voordat we een domein als handle
+            toelaten.
+          </InfoHint>
         </p>
       </div>
 
@@ -148,6 +173,18 @@ export function CustomDomainPanel() {
               >
                 <RefreshCw className="h-3.5 w-3.5" aria-hidden /> Controleer DNS
               </Button>
+              {row.status === "verified" && (
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="secondary"
+                  onClick={() => claimHandle(row.id)}
+                  disabled={busy === row.id}
+                  className="gap-1"
+                >
+                  <AtSign className="h-3.5 w-3.5" aria-hidden /> Gebruik als handle
+                </Button>
+              )}
               <Button
                 type="button"
                 size="sm"

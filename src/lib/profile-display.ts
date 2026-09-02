@@ -7,7 +7,16 @@
  * studio nieuwe opties toevoegen zonder migratie per schakelaar.
  */
 
-export type BadgeType = "verified" | "human";
+/**
+ * Welke badge naast de naam staat:
+ *  • `verified` — blauw vinkje: identiteit + volledige naam en land bevestigd
+ *  • `human`    — privacy-schild: bevestigd mens, naam blijft privé
+ *  • `domain`   — zwarte domeinbadge: eigendom van de domeinnaam bewezen via DNS
+ *  • `none`     — geen badge (moet niet)
+ */
+export type BadgeType = "verified" | "human" | "domain" | "none";
+/** Achterzetsel achter de badge zodat het vinkje op elke achtergrond leesbaar blijft. */
+export type BadgeBackdrop = "none" | "glow" | "sticker" | "ring";
 export type BadgeNameFormat = "full" | "initials" | "lower";
 export type IdentityMode = "legal" | "private";
 export type BackgroundStyle =
@@ -125,6 +134,10 @@ export interface ProfileDisplayPrefs {
   badgeShowcaseVisible: boolean;
   badgeType: BadgeType;
   badgeNameFormat: BadgeNameFormat;
+  /** Achtergrondje achter de badge (gloed, sticker of randje). */
+  badgeBackdrop: BadgeBackdrop;
+  /** Kleur van dat achterzetsel; `null` = automatisch. */
+  badgeBackdropColor: string | null;
   /** `null` = volg de standaard (gratis toont watermerk, betalend niet). */
   showWatermark: boolean | null;
   backgroundStyle: BackgroundStyle;
@@ -194,6 +207,8 @@ export const DEFAULT_DISPLAY_PREFS: ProfileDisplayPrefs = {
   badgeShowcaseVisible: true,
   badgeType: "verified",
   badgeNameFormat: "full",
+  badgeBackdrop: "none",
+  badgeBackdropColor: null,
   showWatermark: null,
   backgroundStyle: "solid",
   typography: "sans",
@@ -277,13 +292,30 @@ export const BADGE_TYPES: { id: BadgeType; label: string; note: string }[] = [
   {
     id: "verified",
     label: "Blauw vinkje",
-    note: "Toont je geverifieerde identiteit.",
+    note: "Bevestigt je identiteit: volledige naam en land (bv. BE).",
   },
   {
     id: "human",
     label: "Privacy-schild",
     note: "Bevestigt: echte mens, zonder je naam te tonen.",
   },
+  {
+    id: "domain",
+    label: "Domeinbadge (zwart)",
+    note: "Bevestigt dat jij deze domeinnaam claimde via DNS.",
+  },
+  {
+    id: "none",
+    label: "Geen badge",
+    note: "Toont niets naast je naam — een badge moet niet.",
+  },
+];
+
+export const BADGE_BACKDROPS: { id: BadgeBackdrop; label: string; note: string }[] = [
+  { id: "none", label: "Geen", note: "Enkel het pictogram." },
+  { id: "glow", label: "Lichtgloed", note: "Zachte gloed errond." },
+  { id: "sticker", label: "Ronde sticker", note: "Gevulde cirkel erachter." },
+  { id: "ring", label: "Lichte rand", note: "Fijn randje errond." },
 ];
 
 export const BADGE_NAME_FORMATS: { id: BadgeNameFormat; label: string }[] = [
@@ -343,8 +375,10 @@ export function parseDisplayPrefs(raw: unknown): ProfileDisplayPrefs {
     humanBadgeVisible: r["humanBadgeVisible"] === undefined ? true : Boolean(r["humanBadgeVisible"]),
     badgeShowcaseVisible:
       r["badgeShowcaseVisible"] === undefined ? true : Boolean(r["badgeShowcaseVisible"]),
-    badgeType: oneOf(r["badgeType"], ["verified", "human"] as const, "verified"),
+    badgeType: oneOf(r["badgeType"], ["verified", "human", "domain", "none"] as const, "verified"),
     badgeNameFormat: oneOf(r["badgeNameFormat"], ["full", "initials", "lower"] as const, "full"),
+    badgeBackdrop: oneOf(r["badgeBackdrop"], ["none", "glow", "sticker", "ring"] as const, "none"),
+    badgeBackdropColor: colorOrNull(r["badgeBackdropColor"]),
     showWatermark:
       r["showWatermark"] === null || r["showWatermark"] === undefined
         ? null
@@ -551,6 +585,9 @@ export function formatBadgeName(name: string, format: BadgeNameFormat): string {
 
 export const BADGE_VERIFIED_BODY =
   "Officieel geverifieerd lid. Identiteit en accountstatus zijn succesvol gevalideerd via ROUT.";
+
+export const BADGE_DOMAIN_BODY =
+  "Deze domeinnaam is via de DNS-zone geverifieerd: het bewijs dat dit account de eigenaar van dat domein is. De badge zegt niets over de identiteit erachter.";
 
 export const BADGE_HUMAN_BODY =
   "Dit account is gekoppeld aan een geverifieerd ROUT-account: een bevestigde mens. De wettelijke naam blijft hier privé — die staat enkel bij het blauwe vinkje op het geverifieerde profiel.";

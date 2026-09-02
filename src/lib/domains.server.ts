@@ -148,3 +148,17 @@ export async function findHandleForHost(host: string): Promise<string | null> {
   const username = rows[0]?.["username"];
   return typeof username === "string" && username ? username : null;
 }
+
+/**
+ * Zet een geverifieerde domeinnaam als roothandle van dit profiel. De claim is
+ * meteen actief zodat `rout.be/<domein>` het profiel toont.
+ */
+export async function setSubdomainAliasFor(userId: string, handle: string) {
+  await sql`
+    update public.profiles
+       set subdomain_alias = ${handle},
+           root_subdomain_status = 'active',
+           updated_at = now()
+     where id = ${userId}
+  `;
+}
