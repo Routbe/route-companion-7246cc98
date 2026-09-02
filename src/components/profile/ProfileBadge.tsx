@@ -117,7 +117,7 @@ export function ProfileBadge({
         }
       >
         <div className="flex items-start gap-2">
-          <span className="mt-0.5 shrink-0">{icon("!h-5 !w-5")}</span>
+          <span className="mt-0.5 shrink-0">{icon()}</span>
           <div className="space-y-1">
             <p className="text-sm font-semibold leading-tight">{title}</p>
             {(shownName || shownCountry) && (
