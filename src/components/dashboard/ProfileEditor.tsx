@@ -1374,17 +1374,62 @@ export function ProfileEditor({ variant = "verified" }: { variant?: ProfileVaria
                     </div>
 
                     <div className="space-y-2">
-                      <p className="input-label">Badgetype</p>
+                      <p className="input-label flex items-center gap-1">
+                        Badgetype
+                        <InfoHint label="Welke badge kies ik?">
+                          Privacy-schild: bevestigt dat je een echte mens bent, zonder je naam of
+                          land te tonen. Blauw vinkje: toont je geverifieerde identiteit (naam en
+                          land). Zwarte domeinbadge: bewijst dat je de domeinnaam achter je handle
+                          via DNS claimde. Je mag ook helemaal geen badge tonen.
+                        </InfoHint>
+                      </p>
                       <div className="grid gap-2 sm:grid-cols-2">
-                        {BADGE_TYPES.map((b) => (
+                        {BADGE_TYPES.map((b) => {
+                          const needsDomain = b.id === "domain" && !claimedDomainHandle;
+                          return (
+                            <button
+                              key={b.id}
+                              type="button"
+                              disabled={!verified || !prefs.badgeVisible || needsDomain}
+                              onClick={() => setPref("badgeType", b.id)}
+                              className={cn(
+                                "rounded-xl border px-3 py-2 text-left text-xs transition-colors disabled:opacity-50",
+                                prefs.badgeType === b.id
+                                  ? "border-primary/50 bg-primary/10"
+                                  : "border-border",
+                              )}
+                            >
+                              <span className="block font-medium">{b.label}</span>
+                              <span className="block text-muted-foreground">
+                                {needsDomain ? "Claim eerst een domein via DNS" : b.note}
+                              </span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Achtergrondje achter de badge: houdt het vinkje leesbaar op
+                        donkere of drukke achtergronden. */}
+                    <div className="space-y-2">
+                      <p className="input-label flex items-center gap-1">
+                        Badge-achtergrond
+                        <InfoHint label="Waarom een achtergrond achter de badge?">
+                          Op een zwarte of drukke achtergrond valt het vinkje soms weg. Zet er een
+                          zachte gloed, een ronde sticker of een licht randje achter in een kleur
+                          naar keuze, zodat de badge altijd zichtbaar blijft.
+                        </InfoHint>
+                      </p>
+                      <div className="grid gap-2 sm:grid-cols-2">
+                        {BADGE_BACKDROPS.map((b) => (
                           <button
                             key={b.id}
                             type="button"
-                            disabled={!verified || !prefs.badgeVisible}
-                            onClick={() => setPref("badgeType", b.id)}
+                            disabled={!prefs.badgeVisible}
+                            onClick={() => setPref("badgeBackdrop", b.id)}
                             className={cn(
                               "rounded-xl border px-3 py-2 text-left text-xs transition-colors disabled:opacity-50",
-                              prefs.badgeType === b.id
+                              prefs.badgeBackdrop === b.id
                                 ? "border-primary/50 bg-primary/10"
                                 : "border-border",
                             )}
@@ -1394,6 +1439,25 @@ export function ProfileEditor({ variant = "verified" }: { variant?: ProfileVaria
                           </button>
                         ))}
                       </div>
+                      {prefs.badgeBackdrop !== "none" && (
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="color"
+                            aria-label="Kleur badge-achtergrond"
+                            value={prefs.badgeBackdropColor ?? "#4ade80"}
+                            onChange={(e) => setPref("badgeBackdropColor", e.target.value)}
+                            className="h-11 w-14 cursor-pointer rounded-xl border border-border bg-transparent"
+                          />
+                          <Input
+                            value={prefs.badgeBackdropColor ?? ""}
+                            placeholder="#4ade80"
+                            onChange={(e) =>
+                              setPref("badgeBackdropColor", e.target.value.trim() || null)
+                            }
+                            className="input-field h-11 flex-1 rounded-xl font-mono"
+                          />
+                        </div>
+                      )}
                     </div>
 
                     {prefs.badgeType === "verified" && (
