@@ -98,6 +98,10 @@ export interface ProfileRecord {
   /** Weergavevoorkeuren (badge, watermerk, achtergrond) — zie profile-display.ts. */
   display_prefs?: unknown;
   verified_legal_name?: string | null;
+  /** ISO 3166-1 alpha-2 land van het geverifieerde lid (bv. "BE"). */
+  country_code?: string | null;
+  /** Geclaimde rootnaam — een via DNS geverifieerd domein mag hier staan. */
+  subdomain_alias?: string | null;
   /**
    * Geverifieerde sociale accounts met gecachte volgeraantallen. Deze data komt
    * uitsluitend uit onze database (`social_links`), nooit uit een externe API
