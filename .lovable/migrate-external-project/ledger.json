@@ -1,0 +1,74 @@
+{
+  "capabilities": [
+    {
+      "capability": "TanStack Start application code",
+      "source": "https://github.com/Routbe/route-companion-05a64951.git",
+      "outcome": "preserve",
+      "status": "in_progress",
+      "next_action": "Copy src/, public/, config files into target project"
+    },
+    {
+      "capability": "Database schema",
+      "source": "supabase/migrations/ and db/",
+      "outcome": "preserve",
+      "status": "pending",
+      "next_action": "Apply migrations to Lovable Cloud"
+    },
+    {
+      "capability": "Database records",
+      "source": "database-records/manifest.json",
+      "outcome": "not_available",
+      "status": "blocked",
+      "next_action": "No bundled records; app will start empty"
+    },
+    {
+      "capability": "Neon PostgreSQL runtime",
+      "source": "@neondatabase/serverless, src/lib/db/*, neon.ts",
+      "outcome": "replace",
+      "status": "pending",
+      "next_action": "Replace Neon client with Lovable Cloud Supabase client"
+    },
+    {
+      "capability": "Custom WebAuthn/FIDO2 passkey authentication",
+      "source": "src/lib/auth/*, src/routes/api_.auth.*",
+      "outcome": "preserve",
+      "status": "pending",
+      "next_action": "Keep custom auth boundary; defer full Lovable Cloud auth cutover after preview"
+    },
+    {
+      "capability": "Stripe payments",
+      "source": "src/routes/api_.public.stripe-webhook.ts, @stripe/*",
+      "outcome": "preserve",
+      "status": "pending",
+      "next_action": "Requires STRIPE_SECRET_KEY and STRIPE_WEBHOOK_SECRET via Secrets"
+    },
+    {
+      "capability": "Brevo email templates",
+      "source": "src/emails/*, docs/brevo-templates.md",
+      "outcome": "preserve",
+      "status": "pending",
+      "next_action": "Requires BREVO_API_KEY and template IDs via Secrets"
+    },
+    {
+      "capability": "External OAuth providers (GitLab, Mastodon)",
+      "source": "src/routes/api_.auth.*, src/routes/auth_.gitlab.*, src/routes/auth_.mastodon.*",
+      "outcome": "preserve",
+      "status": "pending",
+      "next_action": "Requires provider client secrets via Secrets"
+    },
+    {
+      "capability": "Infomaniak/S3 storage",
+      "source": "src/lib/storage/*",
+      "outcome": "preserve",
+      "status": "pending",
+      "next_action": "Requires S3-compatible credentials via Secrets"
+    },
+    {
+      "capability": "Cron jobs",
+      "source": "src/routes/api_.public.cron.*",
+      "outcome": "preserve",
+      "status": "pending",
+      "next_action": "Recreate pg_cron schedules after preview"
+    }
+  ]
+}
