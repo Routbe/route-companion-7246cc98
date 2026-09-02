@@ -375,8 +375,10 @@ export function parseDisplayPrefs(raw: unknown): ProfileDisplayPrefs {
     humanBadgeVisible: r["humanBadgeVisible"] === undefined ? true : Boolean(r["humanBadgeVisible"]),
     badgeShowcaseVisible:
       r["badgeShowcaseVisible"] === undefined ? true : Boolean(r["badgeShowcaseVisible"]),
-    badgeType: oneOf(r["badgeType"], ["verified", "human"] as const, "verified"),
+    badgeType: oneOf(r["badgeType"], ["verified", "human", "domain", "none"] as const, "verified"),
     badgeNameFormat: oneOf(r["badgeNameFormat"], ["full", "initials", "lower"] as const, "full"),
+    badgeBackdrop: oneOf(r["badgeBackdrop"], ["none", "glow", "sticker", "ring"] as const, "none"),
+    badgeBackdropColor: colorOrNull(r["badgeBackdropColor"]),
     showWatermark:
       r["showWatermark"] === null || r["showWatermark"] === undefined
         ? null
@@ -583,6 +585,9 @@ export function formatBadgeName(name: string, format: BadgeNameFormat): string {
 
 export const BADGE_VERIFIED_BODY =
   "Officieel geverifieerd lid. Identiteit en accountstatus zijn succesvol gevalideerd via ROUT.";
+
+export const BADGE_DOMAIN_BODY =
+  "Deze domeinnaam is via de DNS-zone geverifieerd: het bewijs dat dit account de eigenaar van dat domein is. De badge zegt niets over de identiteit erachter.";
 
 export const BADGE_HUMAN_BODY =
   "Dit account is gekoppeld aan een geverifieerd ROUT-account: een bevestigde mens. De wettelijke naam blijft hier privé — die staat enkel bij het blauwe vinkje op het geverifieerde profiel.";
