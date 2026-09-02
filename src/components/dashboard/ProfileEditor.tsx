@@ -66,6 +66,7 @@ import { effectiveUrlStyle, styledProfilePath, type UrlStyle } from "@/lib/profi
 import {
   BADGE_NAME_FORMATS,
   BADGE_TYPES,
+  BADGE_BACKDROPS,
   DEFAULT_DISPLAY_PREFS,
   formatBadgeName,
   parseDisplayPrefs,
@@ -172,6 +173,10 @@ export function ProfileEditor({ variant = "verified" }: { variant?: ProfileVaria
   const [verified, setVerified] = useState(false);
   // Rootclaim-gegevens: nodig om "Bekijk live profiel" uit één bron te halen.
   const [subdomainAlias, setSubdomainAlias] = useState<string | null>(null);
+  /** Handle die eigenlijk een via DNS geclaimde domeinnaam is (rout.be/example.be). */
+  const claimedDomainHandle = /^[a-z0-9-]+(\.[a-z0-9-]+)+$/i.test(subdomainAlias ?? "")
+    ? subdomainAlias
+    : null;
   const [rootStatus, setRootStatus] = useState<string | null>(null);
   const [aliasHandle, setAliasHandle] = useState<string | null>(null);
   /** `profiles.username` van hetzelfde account (geverifieerde rootnaam). */
