@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { ExternalLink, Share2 } from "lucide-react";
+import { InfoHint } from "@/components/InfoHint";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import {
