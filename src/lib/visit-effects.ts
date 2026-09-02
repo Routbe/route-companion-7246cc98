@@ -44,12 +44,19 @@ export function prefersReducedMotion(): boolean {
 
 const CONFETTI_COLORS = ["#f43f5e", "#f59e0b", "#22c55e", "#3b82f6", "#a855f7", "#facc15"];
 
-function layer(): HTMLDivElement {
+function layer(container?: HTMLElement | null): HTMLDivElement {
   const el = document.createElement("div");
   el.setAttribute("aria-hidden", "true");
-  el.style.cssText =
-    "position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:60;contain:strict";
-  document.body.appendChild(el);
+  // Zonder container valt het effect over het hele venster; met container
+  // (bv. de live preview in de Studio) blijft het netjes binnen die kaart.
+  el.style.cssText = container
+    ? "position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:60"
+    : "position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:60;contain:strict";
+  const host = container ?? document.body;
+  if (container && getComputedStyle(container).position === "static") {
+    container.style.position = "relative";
+  }
+  host.appendChild(el);
   return el;
 }
 
@@ -67,12 +74,18 @@ const pick = <T>(list: readonly T[]): T => list[Math.floor(Math.random() * list.
  * Start het gekozen effect één keer. Retourneert een opruimfunctie zodat een
  * component het effect kan afbreken bij unmount of bij een nieuwe test.
  */
-export function runVisitEffect(effect: VisitEffect, options?: { force?: boolean }): () => void {
+export function runVisitEffect(
+  effect: VisitEffect,
+  options?: { force?: boolean; container?: HTMLElement | null },
+): () => void {
   if (typeof document === "undefined") return () => {};
   if (effect === "none") return () => {};
   if (!options?.force && prefersReducedMotion()) return () => {};
 
-  const root = layer();
+  const root = layer(options?.container ?? null);
+  const box = options?.container?.getBoundingClientRect();
+  const viewW = box?.width || (typeof window === "undefined" ? 1024 : window.innerWidth);
+  const viewH = box?.height || (typeof window === "undefined" ? 768 : window.innerHeight);
   let done = false;
   const cleanup = () => {
     if (done) return;
@@ -117,7 +130,7 @@ export function runVisitEffect(effect: VisitEffect, options?: { force?: boolean 
     for (let i = 0; i < count; i += 1) {
       const el = piece(
         root,
-        `left:${rand(2, 94)}vw;bottom:-40px;font-size:${rand(fontSize[0], fontSize[1])}px;line-height:1`,
+        `left:${rand(2, 94)}%;bottom:-40px;font-size:${rand(fontSize[0], fontSize[1])}px;line-height:1`,
       );
       el.textContent = pick(glyphs);
       animate(
@@ -125,11 +138,11 @@ export function runVisitEffect(effect: VisitEffect, options?: { force?: boolean 
         [
           { transform: "translateY(0) translateX(0)", opacity: 0 },
           {
-            transform: `translateY(-55vh) translateX(${rand(-40, 40)}px)`,
+            transform: `translateY(-55%) translateX(${rand(-40, 40)}px)`,
             opacity: 1,
             offset: 0.3,
           },
-          { transform: `translateY(-115vh) translateX(${rand(-80, 80)}px)`, opacity: 0 },
+          { transform: `translateY(-115%) translateX(${rand(-80, 80)}px)`, opacity: 0 },
         ],
         rand(4200, 7000),
         rand(0, 1200),
@@ -139,14 +152,14 @@ export function runVisitEffect(effect: VisitEffect, options?: { force?: boolean 
 
   const fallers = (render: (el: HTMLSpanElement) => void, count: number) => {
     for (let i = 0; i < count; i += 1) {
-      const el = piece(root, `left:${rand(0, 98)}vw;top:-60px`);
+      const el = piece(root, `left:${rand(0, 98)}%;top:-60px`);
       render(el);
       animate(
         el,
         [
           { transform: "translateY(0)", opacity: 0 },
-          { transform: "translateY(20vh)", opacity: 1, offset: 0.15 },
-          { transform: "translateY(110vh)", opacity: 0 },
+          { transform: "translateY(20%)", opacity: 1, offset: 0.15 },
+          { transform: "translateY(110%)", opacity: 0 },
         ],
         rand(2600, 5200),
         rand(0, 1600),
@@ -156,15 +169,15 @@ export function runVisitEffect(effect: VisitEffect, options?: { force?: boolean 
 
   switch (effect) {
     case "confetti":
-      burst(window.innerWidth / 2, window.innerHeight * 0.32, 120);
-      window.setTimeout(() => burst(window.innerWidth * 0.25, window.innerHeight * 0.4, 60), 220);
-      window.setTimeout(() => burst(window.innerWidth * 0.75, window.innerHeight * 0.4, 60), 380);
+      burst(viewW / 2, viewH * 0.32, 120);
+      window.setTimeout(() => burst(viewW * 0.25, viewH * 0.4, 60), 220);
+      window.setTimeout(() => burst(viewW * 0.75, viewH * 0.4, 60), 380);
       break;
     case "fireworks":
       for (let i = 0; i < 5; i += 1) {
         window.setTimeout(
           () =>
-            burst(rand(0.15, 0.85) * window.innerWidth, rand(0.15, 0.5) * window.innerHeight, 70),
+            burst(rand(0.15, 0.85) * viewW, rand(0.15, 0.5) * viewH, 70),
           i * 450,
         );
       }
