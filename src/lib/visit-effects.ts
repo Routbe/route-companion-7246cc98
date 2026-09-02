@@ -138,11 +138,11 @@ export function runVisitEffect(
         [
           { transform: "translateY(0) translateX(0)", opacity: 0 },
           {
-            transform: `translateY(-55%) translateX(${rand(-40, 40)}px)`,
+            transform: `translateY(${-0.55 * viewH}px) translateX(${rand(-40, 40)}px)`,
             opacity: 1,
             offset: 0.3,
           },
-          { transform: `translateY(-115%) translateX(${rand(-80, 80)}px)`, opacity: 0 },
+          { transform: `translateY(${-1.15 * viewH}px) translateX(${rand(-80, 80)}px)`, opacity: 0 },
         ],
         rand(4200, 7000),
         rand(0, 1200),
@@ -158,8 +158,8 @@ export function runVisitEffect(
         el,
         [
           { transform: "translateY(0)", opacity: 0 },
-          { transform: "translateY(20%)", opacity: 1, offset: 0.15 },
-          { transform: "translateY(110%)", opacity: 0 },
+          { transform: `translateY(${0.2 * viewH}px)`, opacity: 1, offset: 0.15 },
+          { transform: `translateY(${1.1 * viewH}px)`, opacity: 0 },
         ],
         rand(2600, 5200),
         rand(0, 1600),
