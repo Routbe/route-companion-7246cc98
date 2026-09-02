@@ -103,3 +103,45 @@ export const listCustomDomains = createServerFn({ method: "POST" })
     const { listDomainsFor } = await import("./domains.server");
     return (await listDomainsFor(context.userId)) as unknown as DomainRow[];
   });
+
+/**
+ * Gebruik een via DNS geverifieerd domein als handle: `rout.be/example.be`.
+ *
+ * De domeinnaam wordt pas een handle wanneer die verificatie opnieuw slaagt —
+ * we vertrouwen nooit op een eerder gezette status alleen. De naam belandt in
+ * `profiles.subdomain_alias`, dezelfde naamruimte als gewone handles, en levert
+ * de zwarte domeinbadge op.
+ */
+export const useDomainAsHandle = createServerFn({ method: "POST" })
+  .middleware([requireAuth])
+  .inputValidator((data) => z.object({ id: z.string().uuid() }).parse(data))
+  .handler(async ({ data, context }) => {
+    const { assertEntitled } = await import("./entitlement.server");
+    await assertEntitled(context.userId);
+    const { getOwnedDomain, checkDomainDns, updateDomainStatus } = await import(
+      "./domains.server"
+    );
+    const row = await getOwnedDomain(data.id, context.userId);
+    if (!row) throw new Error("Domein niet gevonden.");
+
+    const check = await checkDomainDns(
+      row.domain as string,
+      row.verification_token as string,
+      DOMAIN_CNAME_TARGET,
+      DOMAIN_A_TARGET,
+    );
+    if (!check.txtFound) {
+      throw new Error("DNS-verificatie mislukt — het TXT-record is nog niet zichtbaar.");
+    }
+    await updateDomainStatus(row.id as string, check.cnameFound ? "verified" : "pointing", true);
+
+    const handle = String(row.domain).toLowerCase();
+    const { isHandleAvailableFor } = await import("./handle-namespace.server");
+    if (!(await isHandleAvailableFor(handle, context.userId))) {
+      throw new Error("Deze naam is al in gebruik binnen ROUT.");
+    }
+
+    const { setSubdomainAliasFor } = await import("./domains.server");
+    await setSubdomainAliasFor(context.userId, handle);
+    return { handle };
+  });
