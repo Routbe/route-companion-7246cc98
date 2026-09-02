@@ -222,9 +222,10 @@ export function ProfileView({
   // volledige studiopagina.
   useEffect(() => {
     const onTest = (event: Event) => {
-      const detail = (event as CustomEvent<{ effect?: string }>).detail;
+      const detail = (event as CustomEvent<{ effect?: string; handled?: boolean }>).detail;
       const effect = isVisitEffect(detail?.effect) ? detail.effect : prefs.visitEffect;
       if (effect === "none") return;
+      if (detail) detail.handled = true;
       stopTestRef.current?.();
       stopTestRef.current = runVisitEffect(effect, {
         force: true,
