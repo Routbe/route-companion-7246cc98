@@ -45,6 +45,7 @@ export function AppLayout({
   crumbs,
   actions,
   width = "default",
+  trustBadges = false,
 }: AppLayoutProps) {
   const hidden = useHeaderReveal();
   return (

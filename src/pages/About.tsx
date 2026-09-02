@@ -339,7 +339,7 @@ export default function About() {
   );
 
   return (
-    <AppLayout crumbs={[{ label: t("about.crumb") }]}>
+    <AppLayout crumbs={[{ label: t("about.crumb") }]} trustBadges>
       {/* pb-28 houdt de laatste CTA vrij van de footer en de zwevende knop */}
       <div className="mx-auto max-w-5xl px-4 py-12 pb-28 sm:px-6 sm:py-20">
         <section className="grid items-center gap-12 lg:grid-cols-[1.1fr_0.9fr]">
