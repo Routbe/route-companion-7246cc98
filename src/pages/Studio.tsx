@@ -26,6 +26,7 @@ export default function Studio() {
       title="Profile Hub Studio"
       description="Your sovereign link-in-bio: components, design, subdomain and verification."
       crumbs={[{ label: "Studio" }]}
+      trustBadges
     >
       {loading || !user ? (
         <div className="flex min-h-[40vh] items-center justify-center">
