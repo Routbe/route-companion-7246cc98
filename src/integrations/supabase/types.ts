@@ -14,6 +14,41 @@ export type Database = {
   }
   public: {
     Tables: {
+      analytics_events: {
+        Row: {
+          created_at: string
+          device_type: string | null
+          event_type: string
+          id: string
+          profile_id: string
+          referrer: string | null
+        }
+        Insert: {
+          created_at?: string
+          device_type?: string | null
+          event_type: string
+          id?: string
+          profile_id: string
+          referrer?: string | null
+        }
+        Update: {
+          created_at?: string
+          device_type?: string | null
+          event_type?: string
+          id?: string
+          profile_id?: string
+          referrer?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "analytics_events_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       links: {
         Row: {
           created_at: string
@@ -190,6 +225,125 @@ export type Database = {
           verified?: boolean
           verified_at?: string | null
           verified_legal_name?: string | null
+        }
+        Relationships: []
+      }
+      qr_scans: {
+        Row: {
+          country: string | null
+          device: string | null
+          id: string
+          scanned_at: string
+          tracked_qr_id: string
+          user_agent: string | null
+        }
+        Insert: {
+          country?: string | null
+          device?: string | null
+          id?: string
+          scanned_at?: string
+          tracked_qr_id: string
+          user_agent?: string | null
+        }
+        Update: {
+          country?: string | null
+          device?: string | null
+          id?: string
+          scanned_at?: string
+          tracked_qr_id?: string
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "qr_scans_tracked_qr_id_fkey"
+            columns: ["tracked_qr_id"]
+            isOneToOne: false
+            referencedRelation: "tracked_qrs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      saved_qrs: {
+        Row: {
+          config: Json
+          created_at: string
+          id: string
+          name: string
+          qr_type: string
+          qr_value: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          config?: Json
+          created_at?: string
+          id?: string
+          name: string
+          qr_type: string
+          qr_value: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          config?: Json
+          created_at?: string
+          id?: string
+          name?: string
+          qr_type?: string
+          qr_value?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      tracked_qrs: {
+        Row: {
+          created_at: string
+          custom_domain: string | null
+          dashboard_token: string
+          expires_at: string | null
+          id: string
+          is_active: boolean
+          kind: string
+          label: string | null
+          short_link_enabled: boolean
+          slug: string
+          target_type: string
+          target_url: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          custom_domain?: string | null
+          dashboard_token: string
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean
+          kind?: string
+          label?: string | null
+          short_link_enabled?: boolean
+          slug: string
+          target_type: string
+          target_url: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          custom_domain?: string | null
+          dashboard_token?: string
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean
+          kind?: string
+          label?: string | null
+          short_link_enabled?: boolean
+          slug?: string
+          target_type?: string
+          target_url?: string
+          updated_at?: string
+          user_id?: string | null
         }
         Relationships: []
       }
