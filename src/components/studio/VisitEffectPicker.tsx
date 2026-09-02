@@ -1,12 +1,19 @@
 import { useEffect, useRef } from "react";
 import { Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { InfoHint } from "@/components/InfoHint";
 import { cn } from "@/lib/utils";
-import { VISIT_EFFECTS, runVisitEffect, type VisitEffect } from "@/lib/visit-effects";
+import {
+  VISIT_EFFECTS,
+  VISIT_EFFECT_TEST_EVENT,
+  runVisitEffect,
+  type VisitEffect,
+} from "@/lib/visit-effects";
 
 /**
- * "Pagina Bezoek Effect" — icoonkaarten plus een testknop die het effect direct
- * over de studio afspeelt, zodat de keuze meteen te beoordelen is.
+ * "Pagina Bezoek Effect" — icoonkaarten plus een testknop. De test speelt af
+ * binnen de live preview van je profiel (niet over de studio zelf), precies
+ * zoals een bezoeker het straks op je publieke pagina ziet.
  */
 export function VisitEffectPicker({
   value,
@@ -21,13 +28,23 @@ export function VisitEffectPicker({
 
   const test = () => {
     stopRef.current?.();
-    stopRef.current = runVisitEffect(value, { force: true });
+    // De preview vangt dit op en speelt het effect binnen zijn eigen kader.
+    const detail: { effect: VisitEffect; handled: boolean } = { effect: value, handled: false };
+    window.dispatchEvent(new CustomEvent(VISIT_EFFECT_TEST_EVENT, { detail }));
+    // Geen preview op het scherm? Val terug op een venstereffect.
+    if (!detail.handled) stopRef.current = runVisitEffect(value, { force: true });
   };
 
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between gap-2">
-        <p className="input-label">Pagina Bezoek Effect</p>
+        <p className="input-label flex items-center gap-1">
+          Pagina Bezoek Effect
+          <InfoHint label="Wat is een pagina bezoek effect?">
+            Een korte animatie (confetti, ballonnen …) die één keer over je publieke profiel loopt
+            zodra een bezoeker de pagina opent. De test hieronder speelt het af in je preview.
+          </InfoHint>
+        </p>
         <Button
           type="button"
           variant="outline"
