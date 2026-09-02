@@ -121,6 +121,51 @@ export type Database = {
           },
         ]
       }
+      api_keys: {
+        Row: {
+          created_at: string
+          id: string
+          key_hash: string
+          key_prefix: string
+          last_used_at: string | null
+          name: string
+          rate_limit: number
+          request_count: number
+          revoked_at: string | null
+          scopes: string[]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          key_hash: string
+          key_prefix: string
+          last_used_at?: string | null
+          name: string
+          rate_limit?: number
+          request_count?: number
+          revoked_at?: string | null
+          scopes?: string[]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          key_hash?: string
+          key_prefix?: string
+          last_used_at?: string | null
+          name?: string
+          rate_limit?: number
+          request_count?: number
+          revoked_at?: string | null
+          scopes?: string[]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       badge_events: {
         Row: {
           action: string
@@ -184,6 +229,48 @@ export type Database = {
         }
         Relationships: []
       }
+      custom_domains: {
+        Row: {
+          created_at: string
+          domain: string
+          id: string
+          is_default: boolean
+          last_checked_at: string | null
+          short_links_enabled: boolean
+          status: string
+          updated_at: string
+          user_id: string
+          verification_token: string
+          verified_at: string | null
+        }
+        Insert: {
+          created_at?: string
+          domain: string
+          id?: string
+          is_default?: boolean
+          last_checked_at?: string | null
+          short_links_enabled?: boolean
+          status?: string
+          updated_at?: string
+          user_id: string
+          verification_token: string
+          verified_at?: string | null
+        }
+        Update: {
+          created_at?: string
+          domain?: string
+          id?: string
+          is_default?: boolean
+          last_checked_at?: string | null
+          short_links_enabled?: boolean
+          status?: string
+          updated_at?: string
+          user_id?: string
+          verification_token?: string
+          verified_at?: string | null
+        }
+        Relationships: []
+      }
       links: {
         Row: {
           created_at: string
@@ -224,6 +311,45 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      notifications: {
+        Row: {
+          body: string
+          created_at: string
+          details: Json
+          id: string
+          kind: string
+          locale: string
+          read_at: string | null
+          severity: string
+          title: string
+          user_id: string
+        }
+        Insert: {
+          body?: string
+          created_at?: string
+          details?: Json
+          id?: string
+          kind: string
+          locale?: string
+          read_at?: string | null
+          severity?: string
+          title: string
+          user_id: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          details?: Json
+          id?: string
+          kind?: string
+          locale?: string
+          read_at?: string | null
+          severity?: string
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       profiles: {
         Row: {
@@ -398,6 +524,48 @@ export type Database = {
           },
         ]
       }
+      referral_visits: {
+        Row: {
+          created_at: string
+          handle: string
+          id: string
+          inviter_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          handle: string
+          id?: string
+          inviter_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          handle?: string
+          id?: string
+          inviter_id?: string | null
+        }
+        Relationships: []
+      }
+      reserved_handles: {
+        Row: {
+          created_at: string
+          handle: string
+          label: string | null
+          reason: string
+        }
+        Insert: {
+          created_at?: string
+          handle: string
+          label?: string | null
+          reason?: string
+        }
+        Update: {
+          created_at?: string
+          handle?: string
+          label?: string | null
+          reason?: string
+        }
+        Relationships: []
+      }
       saved_qrs: {
         Row: {
           config: Json
@@ -428,6 +596,81 @@ export type Database = {
           qr_value?: string
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      security_events: {
+        Row: {
+          created_at: string
+          details: Json
+          id: string
+          kind: string
+          message: string
+          severity: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          details?: Json
+          id?: string
+          kind: string
+          message: string
+          severity?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          details?: Json
+          id?: string
+          kind?: string
+          message?: string
+          severity?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      showcase_profiles: {
+        Row: {
+          avatar_url: string | null
+          bio: string
+          created_at: string
+          display_name: string
+          handle: string
+          id: string
+          link_count: number
+          sort_order: number
+          tagline: string
+          theme: string
+          updated_at: string
+          verified: boolean
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string
+          created_at?: string
+          display_name: string
+          handle: string
+          id?: string
+          link_count?: number
+          sort_order?: number
+          tagline?: string
+          theme?: string
+          updated_at?: string
+          verified?: boolean
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string
+          created_at?: string
+          display_name?: string
+          handle?: string
+          id?: string
+          link_count?: number
+          sort_order?: number
+          tagline?: string
+          theme?: string
+          updated_at?: string
+          verified?: boolean
         }
         Relationships: []
       }
@@ -482,6 +725,27 @@ export type Database = {
         }
         Relationships: []
       }
+      upload_rate_limits: {
+        Row: {
+          client_ip: string
+          updated_at: string
+          upload_count: number
+          window_start: string
+        }
+        Insert: {
+          client_ip: string
+          updated_at?: string
+          upload_count?: number
+          window_start?: string
+        }
+        Update: {
+          client_ip?: string
+          updated_at?: string
+          upload_count?: number
+          window_start?: string
+        }
+        Relationships: []
+      }
       user_badges: {
         Row: {
           awarded_at: string
@@ -532,6 +796,75 @@ export type Database = {
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
           user_id?: string
+        }
+        Relationships: []
+      }
+      verification_payments: {
+        Row: {
+          amount_cents: number
+          created_at: string
+          currency: string
+          donation_cents: number
+          donation_plan: string
+          id: string
+          provider: string
+          provider_ref: string | null
+          reference_code: string | null
+          status: string
+          tier: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount_cents: number
+          created_at?: string
+          currency?: string
+          donation_cents?: number
+          donation_plan?: string
+          id?: string
+          provider?: string
+          provider_ref?: string | null
+          reference_code?: string | null
+          status?: string
+          tier: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount_cents?: number
+          created_at?: string
+          currency?: string
+          donation_cents?: number
+          donation_plan?: string
+          id?: string
+          provider?: string
+          provider_ref?: string | null
+          reference_code?: string | null
+          status?: string
+          tier?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      webhook_events: {
+        Row: {
+          created_at: string
+          id: string
+          kind: string | null
+          source: string
+        }
+        Insert: {
+          created_at?: string
+          id: string
+          kind?: string | null
+          source: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          kind?: string | null
+          source?: string
         }
         Relationships: []
       }
