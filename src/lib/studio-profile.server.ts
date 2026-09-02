@@ -225,7 +225,9 @@ export async function readPublicProfile(rawHandle: string) {
              status, is_suspended, is_banned, url_style, verified_legal_name,
              coalesce(show_total_reach, false) as show_total_reach,
              coalesce(total_reach_count, 0) as total_reach_count,
-             to_jsonb(profiles) -> 'display_prefs' as display_prefs
+             to_jsonb(profiles) -> 'display_prefs' as display_prefs,
+             to_jsonb(profiles) ->> 'country_code' as country_code,
+             to_jsonb(profiles) ->> 'subdomain_alias' as subdomain_alias
         from public.profiles
        where (lower(username) = ${username}
               or lower(coalesce(subdomain_alias, '')) = ${username})
