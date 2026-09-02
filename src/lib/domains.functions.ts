@@ -112,7 +112,7 @@ export const listCustomDomains = createServerFn({ method: "POST" })
  * `profiles.subdomain_alias`, dezelfde naamruimte als gewone handles, en levert
  * de zwarte domeinbadge op.
  */
-export const useDomainAsHandle = createServerFn({ method: "POST" })
+export const claimDomainAsHandle = createServerFn({ method: "POST" })
   .middleware([requireAuth])
   .inputValidator((data) => z.object({ id: z.string().uuid() }).parse(data))
   .handler(async ({ data, context }) => {

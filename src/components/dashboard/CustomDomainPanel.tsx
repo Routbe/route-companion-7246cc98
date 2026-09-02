@@ -11,7 +11,7 @@ import {
   deleteCustomDomain,
   listCustomDomains,
   verifyCustomDomain,
-  useDomainAsHandle,
+  claimDomainAsHandle,
 } from "@/lib/domains.functions";
 
 interface DomainRow {
@@ -83,7 +83,7 @@ export function CustomDomainPanel() {
   async function claimHandle(id: string) {
     setBusy(id);
     try {
-      const res = await useDomainAsHandle({ data: { id } });
+      const res = await claimDomainAsHandle({ data: { id } });
       toast.success(`Je profiel staat nu ook op rout.be/${res.handle} — met de zwarte domeinbadge.`);
       await refresh();
     } catch (error) {
