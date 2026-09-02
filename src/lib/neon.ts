@@ -1,4 +1,4 @@
-import type { NeonQueryFunction, NeonQueryPromise } from "@neondatabase/serverless";
+import type { NeonQueryFunction } from "@neondatabase/serverless";
 
 /**
  * Server-only database bridge for project ROUT.
@@ -15,6 +15,18 @@ import type { NeonQueryFunction, NeonQueryPromise } from "@neondatabase/serverle
 async function getAdminClient() {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   return supabaseAdmin;
+}
+
+const RAW_SYMBOL = Symbol("raw-sql");
+
+type RawSql = { [RAW_SYMBOL]: true; value: string };
+
+export function unsafe(raw: string): RawSql {
+  return { [RAW_SYMBOL]: true, value: raw };
+}
+
+function isRawSql(value: unknown): value is RawSql {
+  return value !== null && typeof value === "object" && RAW_SYMBOL in value;
 }
 
 function serializeParam(value: unknown): string {
@@ -38,7 +50,6 @@ async function runSingleQuery(text: string, values: unknown[]): Promise<unknown[
     throw new Error(`Database query failed: ${error.message} (${text.slice(0, 200)})`);
   }
   if (!data) return [];
-  // exec_query returns a setof jsonb; Supabase returns an array of jsonb objects.
   const rows = Array.isArray(data) ? data : [data];
   return rows.map((row) => {
     if (row && typeof row === "object" && "jsonb" in row) {
@@ -91,11 +102,22 @@ function createQueryCall(text: string, values: unknown[]): QueryCall {
   };
 }
 
-function buildTaggedTemplate(strings: TemplateStringsArray, values: unknown[]): string {
-  return strings.reduce((acc, str, i) => {
-    if (i < values.length) return acc + str + `$${i + 1}`;
-    return acc + str;
-  }, "");
+function buildTaggedTemplate(strings: TemplateStringsArray, values: unknown[]): { text: string; values: unknown[] } {
+  let text = "";
+  const boundValues: unknown[] = [];
+  for (let i = 0; i < strings.length; i++) {
+    text += strings[i];
+    if (i < values.length) {
+      const value = values[i];
+      if (isRawSql(value)) {
+        text += value.value;
+      } else {
+        boundValues.push(value);
+        text += `$${boundValues.length}`;
+      }
+    }
+  }
+  return { text, values: boundValues };
 }
 
 const sqlCallable = function (
@@ -104,10 +126,9 @@ const sqlCallable = function (
   ...values: unknown[]
 ): QueryCall {
   if (Array.isArray(stringsOrText) && "raw" in stringsOrText) {
-    const text = buildTaggedTemplate(stringsOrText as TemplateStringsArray, values);
-    return createQueryCall(text, values);
+    const { text, values: boundValues } = buildTaggedTemplate(stringsOrText as TemplateStringsArray, values);
+    return createQueryCall(text, boundValues);
   }
-  // Called as sql("SELECT ...", [params]) — not used in the source but support it.
   const text = typeof stringsOrText === "string" ? stringsOrText : String(stringsOrText);
   return createQueryCall(text, values);
 } as unknown as NeonQueryFunction<false, false>;
@@ -122,5 +143,7 @@ const sqlCallable = function (
 ) => {
   return runTransaction(calls);
 };
+
+(sqlCallable as unknown as Record<string, unknown>).unsafe = unsafe;
 
 export const sql = sqlCallable;
