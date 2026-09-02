@@ -119,6 +119,13 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "analytics_events_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
         ]
       }
       api_keys: {
@@ -310,6 +317,13 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "links_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
         ]
       }
       notifications: {
@@ -367,6 +381,7 @@ export type Database = {
           created_at: string
           custom_domain: string | null
           display_name: string | null
+          display_prefs: Json | null
           favicon_url: string | null
           forwarding_email: string | null
           forwarding_email_token: string | null
@@ -387,11 +402,13 @@ export type Database = {
           referred_by: string | null
           show_email_publicly: boolean
           status: string
+          subdomain_alias: string | null
           subdomain_enabled: boolean
           tagline: string | null
           theme: string
           tier: string
           updated_at: string
+          url_style: string | null
           username: string | null
           verified: boolean
           verified_at: string | null
@@ -412,6 +429,7 @@ export type Database = {
           created_at?: string
           custom_domain?: string | null
           display_name?: string | null
+          display_prefs?: Json | null
           favicon_url?: string | null
           forwarding_email?: string | null
           forwarding_email_token?: string | null
@@ -432,11 +450,13 @@ export type Database = {
           referred_by?: string | null
           show_email_publicly?: boolean
           status?: string
+          subdomain_alias?: string | null
           subdomain_enabled?: boolean
           tagline?: string | null
           theme?: string
           tier?: string
           updated_at?: string
+          url_style?: string | null
           username?: string | null
           verified?: boolean
           verified_at?: string | null
@@ -457,6 +477,7 @@ export type Database = {
           created_at?: string
           custom_domain?: string | null
           display_name?: string | null
+          display_prefs?: Json | null
           favicon_url?: string | null
           forwarding_email?: string | null
           forwarding_email_token?: string | null
@@ -477,11 +498,13 @@ export type Database = {
           referred_by?: string | null
           show_email_publicly?: boolean
           status?: string
+          subdomain_alias?: string | null
           subdomain_enabled?: boolean
           tagline?: string | null
           theme?: string
           tier?: string
           updated_at?: string
+          url_style?: string | null
           username?: string | null
           verified?: boolean
           verified_at?: string | null
@@ -491,28 +514,31 @@ export type Database = {
       }
       qr_scans: {
         Row: {
+          browser: string | null
           country: string | null
           device: string | null
           id: string
+          os: string | null
           scanned_at: string
           tracked_qr_id: string
-          user_agent: string | null
         }
         Insert: {
+          browser?: string | null
           country?: string | null
           device?: string | null
           id?: string
+          os?: string | null
           scanned_at?: string
           tracked_qr_id: string
-          user_agent?: string | null
         }
         Update: {
+          browser?: string | null
           country?: string | null
           device?: string | null
           id?: string
+          os?: string | null
           scanned_at?: string
           tracked_qr_id?: string
-          user_agent?: string | null
         }
         Relationships: [
           {
@@ -523,27 +549,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
-      }
-      referral_visits: {
-        Row: {
-          created_at: string
-          handle: string
-          id: string
-          inviter_id: string | null
-        }
-        Insert: {
-          created_at?: string
-          handle: string
-          id?: string
-          inviter_id?: string | null
-        }
-        Update: {
-          created_at?: string
-          handle?: string
-          id?: string
-          inviter_id?: string | null
-        }
-        Relationships: []
       }
       reserved_handles: {
         Row: {
@@ -671,6 +676,27 @@ export type Database = {
           theme?: string
           updated_at?: string
           verified?: boolean
+        }
+        Relationships: []
+      }
+      signin_throttle: {
+        Row: {
+          failures: number
+          identity_hash: string
+          locked_until: string | null
+          window_started_at: string
+        }
+        Insert: {
+          failures?: number
+          identity_hash: string
+          locked_until?: string | null
+          window_started_at?: string
+        }
+        Update: {
+          failures?: number
+          identity_hash?: string
+          locked_until?: string | null
+          window_started_at?: string
         }
         Relationships: []
       }
@@ -870,7 +896,87 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      public_profiles: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          blocks: Json | null
+          bluesky_did: string | null
+          business_info: Json | null
+          card_style: string | null
+          created_at: string | null
+          custom_domain: string | null
+          display_name: string | null
+          favicon_url: string | null
+          forwarding_email: string | null
+          id: string | null
+          is_banned: boolean | null
+          is_early_believer: boolean | null
+          is_suspended: boolean | null
+          show_email_publicly: boolean | null
+          status: string | null
+          subdomain_enabled: boolean | null
+          tagline: string | null
+          theme: string | null
+          tier: string | null
+          username: string | null
+          verified: boolean | null
+          verified_at: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          blocks?: Json | null
+          bluesky_did?: string | null
+          business_info?: Json | null
+          card_style?: string | null
+          created_at?: string | null
+          custom_domain?: string | null
+          display_name?: string | null
+          favicon_url?: string | null
+          forwarding_email?: never
+          id?: string | null
+          is_banned?: boolean | null
+          is_early_believer?: boolean | null
+          is_suspended?: boolean | null
+          show_email_publicly?: boolean | null
+          status?: string | null
+          subdomain_enabled?: boolean | null
+          tagline?: string | null
+          theme?: string | null
+          tier?: string | null
+          username?: string | null
+          verified?: boolean | null
+          verified_at?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          blocks?: Json | null
+          bluesky_did?: string | null
+          business_info?: Json | null
+          card_style?: string | null
+          created_at?: string | null
+          custom_domain?: string | null
+          display_name?: string | null
+          favicon_url?: string | null
+          forwarding_email?: never
+          id?: string | null
+          is_banned?: boolean | null
+          is_early_believer?: boolean | null
+          is_suspended?: boolean | null
+          show_email_publicly?: boolean | null
+          status?: string | null
+          subdomain_enabled?: boolean | null
+          tagline?: string | null
+          theme?: string | null
+          tier?: string | null
+          username?: string | null
+          verified?: boolean | null
+          verified_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       claim_referral: { Args: { p_referrer: string }; Returns: undefined }
@@ -896,6 +1002,7 @@ export type Database = {
           created_at: string
           custom_domain: string | null
           display_name: string | null
+          display_prefs: Json | null
           favicon_url: string | null
           forwarding_email: string | null
           forwarding_email_token: string | null
@@ -916,11 +1023,13 @@ export type Database = {
           referred_by: string | null
           show_email_publicly: boolean
           status: string
+          subdomain_alias: string | null
           subdomain_enabled: boolean
           tagline: string | null
           theme: string
           tier: string
           updated_at: string
+          url_style: string | null
           username: string | null
           verified: boolean
           verified_at: string | null
@@ -973,10 +1082,11 @@ export type Database = {
       is_handle_available: { Args: { _username: string }; Returns: boolean }
       log_qr_scan: {
         Args: {
+          _browser?: string
           _country?: string
           _device?: string
+          _os?: string
           _tracked_qr_id: string
-          _user_agent?: string
         }
         Returns: undefined
       }
@@ -1001,6 +1111,11 @@ export type Database = {
       }
       seed_demo_content: { Args: { _user_id: string }; Returns: undefined }
       short_link_stats: { Args: { _token: string }; Returns: Json }
+      signin_guard_record: {
+        Args: { _identity_hash: string; _success: boolean }
+        Returns: Json
+      }
+      signin_guard_status: { Args: { _identity_hash: string }; Returns: Json }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
