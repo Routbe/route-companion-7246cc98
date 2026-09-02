@@ -1,26 +1,39 @@
-import { BadgeCheck } from "lucide-react";
-import { HumanLinkedIcon } from "@/components/profile/HumanLinkedIcon";
-import { PrivacyShieldBadge } from "@/components/profile/PrivacyShieldBadge";
+import { BadgeCheck, ShieldCheck } from "lucide-react";
+import { BadgeBackdrop } from "@/components/profile/BadgeBackdrop";
+import { DomainBadgeIcon } from "@/components/profile/DomainBadgeIcon";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { monthYear } from "@/components/profile/VerifiedBadgePopover";
 import { useI18n } from "@/lib/i18n";
 import {
+  BADGE_DOMAIN_BODY,
   BADGE_HUMAN_BODY,
   BADGE_VERIFIED_BODY,
   formatBadgeName,
+  type BadgeBackdrop as BadgeBackdropStyle,
   type BadgeNameFormat,
   type BadgeType,
 } from "@/lib/profile-display";
 
 /**
- * Duale badge: het klassieke blauwe vinkje (identiteit gevalideerd) of het
- * neutrale privacy-schild (bevestigd mens, naam blijft privé).
+ * Eén badge, drie betekenissen — vrij te kiezen (of weg te laten):
+ *
+ *  • `verified` — blauw vinkje: identiteit bevestigd (volledige naam + land)
+ *  • `human`    — privacy-schild: bevestigd mens, naam blijft privé
+ *  • `domain`   — zwarte domeinbadge: domeinnaam geclaimd via de DNS-zone
+ *  • `none`     — geen badge
+ *
+ * Het achterzetsel (gloed, sticker, randje) houdt het vinkje zichtbaar op elke
+ * achtergrond, ook een zwarte.
  */
 export function ProfileBadge({
   type,
   verifiedAt,
   legalName,
+  country,
+  domain,
   nameFormat = "full",
+  backdrop = "none",
+  backdropColor,
   size = "md",
   cardBg,
   cardBorder,
@@ -30,7 +43,13 @@ export function ProfileBadge({
   type: BadgeType;
   verifiedAt?: string | null;
   legalName?: string | null;
+  /** Landcode bij het blauwe vinkje, bv. "BE". */
+  country?: string | null;
+  /** Geclaimde domeinnaam bij de zwarte domeinbadge. */
+  domain?: string | null;
   nameFormat?: BadgeNameFormat;
+  backdrop?: BadgeBackdropStyle;
+  backdropColor?: string | null;
   size?: "sm" | "md";
   cardBg?: string;
   cardBorder?: string;
@@ -38,25 +57,43 @@ export function ProfileBadge({
   mutedColor?: string;
 }) {
   const { t, locale } = useI18n();
+  if (type === "none") return null;
+
   const on = monthYear(verifiedAt, locale || "nl");
-  const human = type === "human";
-  // Alias-profielen (`rout.be/u/…`) tonen het privacy-schild met donkere
-  // glassmorphic tooltip — nooit het blauwe vinkje.
-  if (human) {
-    return <PrivacyShieldBadge size={size} />;
-  }
-  const Icon = human ? HumanLinkedIcon : BadgeCheck;
-  const iconClass = `${size === "md" ? "h-6 w-6" : "h-5 w-5"} ${
-    human ? "opacity-80" : "text-[#1d9bf0]"
-  }`;
-  const title = human
-    ? "Gekoppeld aan een geverifieerd account"
-    : t("profile.verified_badge_title");
-  // Het blauwe vinkje toont bij het openklikken altijd de echte, volledige naam:
-  // de weergavenaam mag vrij zijn, de identiteit erachter niet.
-  const shownName = human
-    ? ""
-    : (legalName ?? "").trim() || formatBadgeName(legalName ?? "", nameFormat);
+  const iconSize = size === "md" ? "h-6 w-6" : "h-5 w-5";
+
+  const title =
+    type === "human"
+      ? "Bevestigd: echte mens"
+      : type === "domain"
+        ? `Domein geclaimd${domain ? ` — ${domain}` : ""}`
+        : t("profile.verified_badge_title");
+
+  const body =
+    type === "human"
+      ? BADGE_HUMAN_BODY
+      : type === "domain"
+        ? BADGE_DOMAIN_BODY
+        : BADGE_VERIFIED_BODY;
+
+  const icon = (extra = "") =>
+    type === "domain" ? (
+      <DomainBadgeIcon className={`${iconSize} ${extra}`} />
+    ) : type === "human" ? (
+      <ShieldCheck className={`${iconSize} ${extra}`} aria-hidden />
+    ) : (
+      <BadgeCheck className={`${iconSize} text-[#1d9bf0] ${extra}`} aria-hidden />
+    );
+
+  // Het blauwe vinkje toont bij het openklikken altijd de echte, volledige naam
+  // en het land: de weergavenaam mag vrij zijn, de identiteit erachter niet.
+  const shownName =
+    type === "verified"
+      ? (legalName ?? "").trim()
+        ? formatBadgeName((legalName ?? "").trim(), nameFormat)
+        : ""
+      : "";
+  const shownCountry = type === "verified" ? (country ?? "").trim().toUpperCase() : "";
 
   return (
     <Popover>
@@ -65,9 +102,11 @@ export function ProfileBadge({
           type="button"
           aria-label={title}
           title={title}
-          className="inline-flex items-center transition-opacity hover:opacity-70 focus:outline-none"
+          className="inline-flex items-center transition-opacity hover:opacity-70 focus:outline-none focus-visible:ring-2 focus-visible:ring-current focus-visible:ring-offset-2"
         >
-          <Icon className={iconClass} aria-hidden />
+          <BadgeBackdrop variant={backdrop} color={backdropColor} size={size}>
+            {icon()}
+          </BadgeBackdrop>
         </button>
       </PopoverTrigger>
       <PopoverContent
@@ -78,21 +117,18 @@ export function ProfileBadge({
         }
       >
         <div className="flex items-start gap-2">
-          <Icon
-            className={`mt-0.5 h-5 w-5 shrink-0 ${human ? "opacity-70" : "text-[#1d9bf0]"}`}
-            aria-hidden
-          />
+          <span className="mt-0.5 shrink-0">{icon("!h-5 !w-5")}</span>
           <div className="space-y-1">
             <p className="text-sm font-semibold leading-tight">{title}</p>
-            {shownName && (
+            {(shownName || shownCountry) && (
               <p
                 className="text-xs font-medium"
                 style={mutedColor ? { color: mutedColor } : undefined}
               >
-                {shownName}
+                {[shownName, shownCountry].filter(Boolean).join(" · ")}
               </p>
             )}
-            {!human && on && (
+            {type === "verified" && on && (
               <p className="text-xs" style={mutedColor ? { color: mutedColor } : undefined}>
                 {t("profile.verified_on")} {on}
               </p>
@@ -101,7 +137,7 @@ export function ProfileBadge({
               className="text-xs leading-relaxed"
               style={mutedColor ? { color: mutedColor } : undefined}
             >
-              {human ? BADGE_HUMAN_BODY : BADGE_VERIFIED_BODY}
+              {body}
             </p>
           </div>
         </div>
