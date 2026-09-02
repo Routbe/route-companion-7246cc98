@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { BadgeCheck, Mail, UserPlus, Users } from "lucide-react";
 import {
   blockHref,
@@ -37,6 +37,7 @@ import { BadgeShowcase } from "@/components/profile/BadgeShowcase";
 import { VerifiedInfoDialog } from "@/components/profile/VerifiedInfoDialog";
 import { monthYear } from "@/components/profile/VerifiedBadgePopover";
 import { ProfileBadge } from "@/components/profile/ProfileBadge";
+import type { BadgeType } from "@/lib/profile-display";
 import { EarlyBelieverBadge } from "@/components/profile/EarlyBelieverBadge";
 import {
   backgroundLayers,
@@ -58,7 +59,11 @@ import {
   wallpaperStyle,
   avatarShapeStyle,
 } from "@/lib/profile-display";
-import { runVisitEffect } from "@/lib/visit-effects";
+import {
+  isVisitEffect,
+  runVisitEffect,
+  VISIT_EFFECT_TEST_EVENT,
+} from "@/lib/visit-effects";
 import { AvatarFrameWrapper } from "@/components/profile/AvatarFrameWrapper";
 import { downloadVCard } from "@/lib/vcard";
 
@@ -199,18 +204,43 @@ export function ProfileView({
     </div>
   );
 
+  const mainRef = useRef<HTMLElement | null>(null);
+  const stopTestRef = useRef<(() => void) | null>(null);
+
   useProfileFavicon(profile.favicon_url ?? profile.avatar_url);
 
   // Entree-effect: exact één keer bij het betreden van het profiel, en nooit
-  // wanneer het besturingssysteem minder beweging vraagt.
+  // wanneer het besturingssysteem minder beweging vraagt. Het effect speelt
+  // binnen deze pagina zelf, dus ook netjes binnen de Studio-preview.
   useEffect(() => {
     if (prefs.visitEffect === "none") return;
-    const stop = runVisitEffect(prefs.visitEffect);
+    const stop = runVisitEffect(prefs.visitEffect, { container: mainRef.current });
     return stop;
+  }, [prefs.visitEffect]);
+
+  // "Test effect" in de Studio: speel het af in deze preview, niet over de
+  // volledige studiopagina.
+  useEffect(() => {
+    const onTest = (event: Event) => {
+      const detail = (event as CustomEvent<{ effect?: string }>).detail;
+      const effect = isVisitEffect(detail?.effect) ? detail.effect : prefs.visitEffect;
+      if (effect === "none") return;
+      stopTestRef.current?.();
+      stopTestRef.current = runVisitEffect(effect, {
+        force: true,
+        container: mainRef.current,
+      });
+    };
+    window.addEventListener(VISIT_EFFECT_TEST_EVENT, onTest);
+    return () => {
+      window.removeEventListener(VISIT_EFFECT_TEST_EVENT, onTest);
+      stopTestRef.current?.();
+    };
   }, [prefs.visitEffect]);
 
   return (
     <main
+      ref={mainRef}
       className={`relative isolate min-h-screen w-full overflow-hidden px-4 pb-12 ${banner ? "pt-0" : "pt-12"}`}
       style={{
         ...surface,

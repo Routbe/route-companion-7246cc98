@@ -31,6 +31,9 @@ export const VISIT_EFFECTS: { id: VisitEffect; label: string; icon: string; hint
   { id: "matrix_rain", label: "Matrix Code Rain", icon: "🌧️", hint: "Cyberpunk / dev" },
 ];
 
+/** Event waarmee de Studio een testafspeling in de preview vraagt. */
+export const VISIT_EFFECT_TEST_EVENT = "rout:visit-effect-test";
+
 export const isVisitEffect = (value: unknown): value is VisitEffect =>
   typeof value === "string" && VISIT_EFFECTS.some((e) => e.id === value);
 
