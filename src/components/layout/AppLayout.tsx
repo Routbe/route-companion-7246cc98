@@ -3,6 +3,7 @@ import { BarChart3, ChevronRight } from "lucide-react";
 import { Link } from "@/lib/router-compat";
 import { RoutLogo } from "@/components/RoutLogo";
 import { Footer } from "@/components/Footer";
+import { TrustBadgesBar } from "@/components/common/TrustBadgesBar";
 import { BackToTop } from "@/components/BackToTop";
 import { NameOnboardingDialog } from "@/components/onboarding/NameOnboardingDialog";
 
@@ -28,6 +29,8 @@ interface AppLayoutProps {
   actions?: ReactNode;
   /** Studio uses the full viewport width; the generator uses 'full' (no gutter). */
   width?: "default" | "wide" | "full";
+  /** Toont de vertrouwensbalk direct boven de footer (home, about, studio). */
+  trustBadges?: boolean;
 }
 
 /**
@@ -42,6 +45,7 @@ export function AppLayout({
   crumbs,
   actions,
   width = "default",
+  trustBadges = false,
 }: AppLayoutProps) {
   const hidden = useHeaderReveal();
   return (
@@ -115,6 +119,7 @@ export function AppLayout({
         </div>
       </main>
 
+      {trustBadges && <TrustBadgesBar className="mt-10" />}
       <Footer />
       <BackToTop />
       <NameOnboardingDialog />

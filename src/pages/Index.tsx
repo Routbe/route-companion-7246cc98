@@ -24,7 +24,6 @@ import { PAYMENT_METHODS, buildPaymentPayload, isPaymentType } from "@/lib/payme
 import { isRichType, buildRichPayload } from "@/lib/rich-qr";
 import { suggestFilename } from "@/lib/brand";
 
-import { TrustBar } from "@/components/TrustBar";
 import { ValuesSection } from "@/components/ValuesSection";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 
@@ -342,7 +341,7 @@ const Index = () => {
   };
 
   return (
-    <AppLayout width="full">
+    <AppLayout width="full" trustBadges>
       {/* Desktop app-shell: a strict 3-column grid so no pane can overlap another. */}
       <div className="grid w-full max-w-full grid-cols-1 overflow-x-hidden lg:h-[calc(100vh-4rem)] lg:grid-cols-[320px_minmax(0,1fr)_340px] lg:overflow-hidden xl:grid-cols-[360px_minmax(0,1fr)_400px]">
         {/* Left column — QR type selector */}
@@ -584,8 +583,6 @@ const Index = () => {
           />
         </aside>
       </div>
-
-      <TrustBar />
 
       <ProfileShowcase />
 
