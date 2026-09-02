@@ -397,6 +397,7 @@ export type Database = {
           moderated_by: string | null
           moderation_reason: string | null
           payment_method: string | null
+          preferred_language: string | null
           redirect_target: string
           referral_count: number
           referred_by: string | null
@@ -445,6 +446,7 @@ export type Database = {
           moderated_by?: string | null
           moderation_reason?: string | null
           payment_method?: string | null
+          preferred_language?: string | null
           redirect_target?: string
           referral_count?: number
           referred_by?: string | null
@@ -493,6 +495,7 @@ export type Database = {
           moderated_by?: string | null
           moderation_reason?: string | null
           payment_method?: string | null
+          preferred_language?: string | null
           redirect_target?: string
           referral_count?: number
           referred_by?: string | null
@@ -1018,6 +1021,7 @@ export type Database = {
           moderated_by: string | null
           moderation_reason: string | null
           payment_method: string | null
+          preferred_language: string | null
           redirect_target: string
           referral_count: number
           referred_by: string | null
