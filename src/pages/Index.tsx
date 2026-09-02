@@ -24,7 +24,6 @@ import { PAYMENT_METHODS, buildPaymentPayload, isPaymentType } from "@/lib/payme
 import { isRichType, buildRichPayload } from "@/lib/rich-qr";
 import { suggestFilename } from "@/lib/brand";
 
-import { TrustBar } from "@/components/TrustBar";
 import { ValuesSection } from "@/components/ValuesSection";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 
@@ -584,8 +583,6 @@ const Index = () => {
           />
         </aside>
       </div>
-
-      <TrustBar />
 
       <ProfileShowcase />
 
