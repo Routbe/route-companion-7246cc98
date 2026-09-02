@@ -875,6 +875,8 @@ export type Database = {
     Functions: {
       claim_referral: { Args: { p_referrer: string }; Returns: undefined }
       delete_account: { Args: never; Returns: undefined }
+      exec_query: { Args: { _params?: Json; _query: string }; Returns: Json[] }
+      exec_sql: { Args: { _params?: Json; _query: string }; Returns: Json }
       generate_unique_handle: { Args: { _seed: string }; Returns: string }
       get_my_profile: {
         Args: never
