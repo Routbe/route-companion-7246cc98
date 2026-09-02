@@ -877,6 +877,7 @@ export type Database = {
       delete_account: { Args: never; Returns: undefined }
       exec_query: { Args: { _params?: Json; _query: string }; Returns: Json[] }
       exec_sql: { Args: { _params?: Json; _query: string }; Returns: Json }
+      exec_transaction: { Args: { _queries: Json }; Returns: Json }
       generate_unique_handle: { Args: { _seed: string }; Returns: string }
       get_my_profile: {
         Args: never
